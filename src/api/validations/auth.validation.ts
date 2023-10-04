@@ -15,7 +15,6 @@ export default {
       body: Joi.object({
         email: Joi.string().email().required().description('Email'),
         password: Joi.string().min(6).max(128).required().description('Password'),
-        uuid: Joi.string().min(6).max(128).required().description('Device ID'),
       }),
     },
     response: {

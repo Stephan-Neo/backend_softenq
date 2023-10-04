@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 // Utils
 import APIError, { ErrorCode } from 'utils/APIError';
@@ -47,15 +48,14 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   try {
     startTimer({ req });
     const {
-      uuid: deviceId,
       email,
       password,
     } = req.body as {
-      uuid: string;
       email: string;
       password: string;
     };
 
+    const deviceId = uuidv4()
     const user = await User.findUserByEmail(email);
 
     if (!user) {
