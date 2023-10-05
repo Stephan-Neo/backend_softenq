@@ -10,6 +10,7 @@ import { apiJson, startTimer } from 'api/utils/ApiUtils';
 import { IUser, IUserTransformType, User } from 'models/user.model';
 import { Device } from 'models/device.model';
 import { RefreshToken } from 'models/refresh-token.model';
+import { UserRole } from 'interfaces/user';
 
 interface AuthorizationResponse {
   profile: IUser;
@@ -39,6 +40,44 @@ const generateAuthorizationResponse = async (user: User, deviceId: string): Prom
     },
   };
 };
+
+/**
+ * SignUp user
+ * @public
+ */
+export async function registration(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  try {
+    startTimer({ req });
+    const role = UserRole.USER
+    const {
+      email,
+      password,
+      name,
+      phone
+    } = req.body as {
+      email: string;
+      password: string;
+      name: string;
+      phone: string;
+    };
+
+    const user = await User.create({
+      email,
+      name,
+      password,
+      role,
+      phone
+    });
+
+    return apiJson({
+      req,
+      res,
+      data: user!.transform(IUserTransformType.private),
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 
 /**
  * Returns jwt token, refresh token and profile if login was successful

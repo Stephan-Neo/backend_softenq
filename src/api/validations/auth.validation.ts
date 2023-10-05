@@ -9,6 +9,21 @@ import { TokenSchema } from 'utils/Validation/schemas/token';
 import { UserSchema } from 'utils/Validation/schemas/user';
 
 export default {
+  // POST /auth/signup
+  sginup: {
+    request: {
+      body: Joi.object({
+        email: Joi.string().email().required().description('Email'),
+        password: Joi.string().min(6).max(128).required().description('Password'),
+        name: Joi.string().min(3).max(128).required().description('Name'),
+        phone: Joi.string().max(128).required().description('Phone'),
+      }),
+    },
+    response: {
+      ...generateResponseValidation(UserSchema.required()),
+    },
+  },
+
   // POST /auth/login
   login: {
     request: {
