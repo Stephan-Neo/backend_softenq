@@ -1,20 +1,13 @@
-version: "2"
+version: '3.8'
+
 services:
-  softenq-api:
-    build: .
-    environment:
-      - PG_DB=softenq
+  nao_drawing_board_dev:
+    build:
+      context: .
+      target: development
     volumes:
-      - .:/app
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
-      - "3000:3000"
-    depends_on:
-      - db
-
-  redis:
-    image: redis:alpine
-    restart: always
-
-  db:
-    image: postgres
-    restart: always
+      - 3000:3000
+    command: yarn start
