@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+
+  build:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker-compose -f docker-compose.yml up -d --build
+
+    - name: send telegram message on push
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TGCHANNELID }}
+        token: ${{ secrets.TGKEY }}
+        message: |
+          ${{ github.actor }} created commit:
+          Commit message: ${{ github.event.commits[0].message }}
+          
+          Repository: ${{ github.repository }}
+          
+          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
