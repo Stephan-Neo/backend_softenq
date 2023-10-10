@@ -5,7 +5,7 @@ const envs = process.env; // this has ".env" keys & values
 
 export default {
   env: envs.NODE_ENV || 'development',
-  port: envs.PORT || 3010,
+  port: envs.PORT || 3000,
   FRONTEND_URL: <string>envs.FRONTEND_URL,
   sequelize: <SequelizeOptions>{
     dialect: 'postgres',

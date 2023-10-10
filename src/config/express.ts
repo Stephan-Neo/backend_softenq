@@ -45,12 +45,12 @@ export default (sequelize: Sequelize): Express => {
   // enable CORS - Cross Origin Resource Sharing
   app.use(cors());
 
-  // --- NOTE: for testing in DEV, allow Access-Control-Allow-Origin: (ref: https://goo.gl/pyjO1H)
-    app.all('/*', function(req, res, next) {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Headers", "X-Requested-With");
-      next();
-    });
+  // // --- NOTE: for testing in DEV, allow Access-Control-Allow-Origin: (ref: https://goo.gl/pyjO1H)
+  //   app.all('/*', function(req, res, next) {
+  //     res.header("Access-Control-Allow-Origin", "*");
+  //     res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  //     next();
+  //   });
 
   app.use((req: Request & { uuid: string }, res: Response, next: NextFunction) => {
     req.uuid = `uuid_${uuid()}`;
