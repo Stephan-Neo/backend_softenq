@@ -21,6 +21,7 @@ jobs:
         to: ${{ secrets.TGCHANNELID }}
         token: ${{ secrets.TGKEY }}
         message: |
+          Backend
           ${{ github.actor }} created commit:
           Commit message: ${{ github.event.commits[0].message }}
           
