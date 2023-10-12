@@ -48,6 +48,11 @@ export class User extends Model {
   updatedAt!: Date;
 
   @AllowNull(false)
+  @Default(false)
+  @Column
+  confirmEmail!: boolean;
+
+  @AllowNull(false)
   @Unique
   @Column
   email!: string;
@@ -94,6 +99,7 @@ export class User extends Model {
       email: this.email,
       phone: this.phone,
       role: this.role,
+      confirmEmail: this.confirmEmail
     };
 
     if ([IUserTransformType.private].includes(type)) {
@@ -104,7 +110,7 @@ export class User extends Model {
     return profile;
   }
 
-  static updateProfile(userId: string, profile: { firstName?: string; lastName?: string } = {}): Promise<boolean> {
+  static updateProfile(userId: string, profile: { name?: string; confirmEmail?: boolean } = {}): Promise<boolean> {
     return this.update(
       {
         ...profile,
@@ -143,4 +149,5 @@ export interface IUser {
   phone?: string;
   role?: UserRole;
   name: string;
+  confirmEmail?: boolean
 }

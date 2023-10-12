@@ -14,6 +14,8 @@ const router = express.Router();
 
 router.route('/signup').post(validate(validation.sginup), controller.registration);
 
+router.route('/confirm-email').post(validate(validation.confirmEmail), controller.confirmEmail);
+
 router.route('/login').post(validate(validation.login), controller.login);
 
 router.route('/refresh-token').post(validate(validation.refresh), controller.refresh);

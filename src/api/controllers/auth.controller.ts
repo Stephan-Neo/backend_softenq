@@ -2,15 +2,24 @@ import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
+// Config
+import configVars from 'config/vars';
+
 // Utils
 import APIError, { ErrorCode } from 'utils/APIError';
 import { apiJson, startTimer } from 'api/utils/ApiUtils';
+
+// Services
+import { deleteValue, getValue, setValueWithExp } from 'services/redis';
+import { sendConfirmEmailUrl } from 'services/mailer';
 
 // Models
 import { IUser, IUserTransformType, User } from 'models/user.model';
 import { Device } from 'models/device.model';
 import { RefreshToken } from 'models/refresh-token.model';
-import { UserRole } from 'interfaces/user';
+import { UserRole, IRedisEmail } from 'interfaces/user';
+
+const EXPIRATION_INVITE_SECONDS = 86400;
 
 interface AuthorizationResponse {
   profile: IUser;
@@ -69,10 +78,59 @@ export async function registration(req: Request, res: Response, next: NextFuncti
       phone
     });
 
+    const confirm_email: IRedisEmail = { email };
+
+    const rounds = configVars.env === 'test' ? 1 : 10;
+    const redisKey = bcrypt.hashSync(JSON.stringify({ ...confirm_email, date: Date.now() }), rounds);
+
+    setValueWithExp(redisKey, { confirm_email }, EXPIRATION_INVITE_SECONDS);
+    await sendConfirmEmailUrl(email, redisKey, name);
+
     return apiJson({
       req,
       res,
       data: user!.transform(IUserTransformType.private),
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Returns jwt token, refresh token and profile if login was successful
+ * @public
+ */
+export async function confirmEmail(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  try {
+    startTimer({ req });
+
+    const { hash } = req.query as {
+      hash: string;
+    };
+
+    const redisEmail = await getValue<{ confirm_email: IRedisEmail }>(hash);
+    if (!redisEmail) {
+      return next(new APIError(ErrorCode.FORBIDDEN));
+    }
+
+    await deleteValue(hash);
+
+    const { email } = redisEmail.confirm_email;
+
+    const user = await User.findUserByEmail(email)
+
+    if (!user) {
+      return next(new APIError(ErrorCode.INCORRECT_EMAIL));
+    }
+
+    await User.updateProfile(user!.id, { confirmEmail: true });
+
+    const update_user = await User.findUserByEmail(email)
+
+    return apiJson({
+      req,
+      res,
+      data: update_user!.transform(IUserTransformType.private),
     });
   } catch (error) {
     return next(error);
@@ -99,6 +157,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
     if (!user) {
       return next(new APIError(ErrorCode.INCORRECT_EMAIL));
+    }
+
+    if (!user.confirmEmail) {
+      return next(new APIError(ErrorCode.FORBIDDEN));
     }
 
     if (!(await bcrypt.compare(password, user.password))) {

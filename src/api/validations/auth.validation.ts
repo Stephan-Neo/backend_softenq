@@ -24,6 +24,18 @@ export default {
     },
   },
 
+  // POST /auth/confirm-email
+  confirmEmail: {
+    request: {
+      query: Joi.object({
+        hash: Joi.string().required().description('Hash'),
+      }),
+    },
+    response: {
+      ...generateResponseValidation(UserSchema.required()),
+    },
+  },
+
   // POST /auth/login
   login: {
     request: {
