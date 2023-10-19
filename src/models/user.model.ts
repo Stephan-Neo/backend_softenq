@@ -110,7 +110,7 @@ export class User extends Model {
     return profile;
   }
 
-  static updateProfile(userId: string, profile: { name?: string; confirmEmail?: boolean } = {}): Promise<boolean> {
+  static updateProfile(userId: string, profile: { name?: string; confirmEmail?: boolean, password?: string } = {}): Promise<boolean> {
     return this.update(
       {
         ...profile,

@@ -16,6 +16,10 @@ router.route('/signup').post(validate(validation.sginup), controller.registratio
 
 router.route('/confirm-email').post(validate(validation.confirmEmail), controller.confirmEmail);
 
+router.route('/password-recovery').post(validate(validation.passwordRecovery), controller.passwordRecovery);
+
+router.route('/update-password').post(validate(validation.updatePassword), controller.updatePassword);
+
 router.route('/login').post(validate(validation.login), controller.login);
 
 router.route('/refresh-token').post(validate(validation.refresh), controller.refresh);

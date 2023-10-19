@@ -11,7 +11,7 @@ import { apiJson, startTimer } from 'api/utils/ApiUtils';
 
 // Services
 import { deleteValue, getValue, setValueWithExp } from 'services/redis';
-import { sendConfirmEmailUrl } from 'services/mailer';
+import { sendConfirmEmailUrl, sendPasswordRecoverylUrl } from 'services/mailer';
 
 // Models
 import { IUser, IUserTransformType, User } from 'models/user.model';
@@ -124,6 +124,91 @@ export async function confirmEmail(req: Request, res: Response, next: NextFuncti
     }
 
     await User.updateProfile(user!.id, { confirmEmail: true });
+
+    const update_user = await User.findUserByEmail(email)
+
+    return apiJson({
+      req,
+      res,
+      data: update_user!.transform(IUserTransformType.private),
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Password Recovery
+ * @public
+ */
+export async function passwordRecovery(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  try {
+    startTimer({ req });
+    const {
+      email,
+    } = req.body as {
+      email: string;
+    };
+
+    const user = await User.findUserByEmail(email);
+
+    if (!user) {
+      return next(new APIError(ErrorCode.INCORRECT_EMAIL));
+    }
+
+    const recovery_email: IRedisEmail = { email };
+    const rounds = configVars.env === 'test' ? 1 : 10;
+    const redisKey = bcrypt.hashSync(JSON.stringify({ ...recovery_email, date: Date.now() }), rounds);
+
+    setValueWithExp(redisKey, { recovery_email }, EXPIRATION_INVITE_SECONDS);
+    await sendPasswordRecoverylUrl(email, redisKey, user.name);
+
+    return apiJson({
+      req,
+      res,
+      data: user!.transform(IUserTransformType.private),
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Update Password
+ * @public
+ */
+export async function updatePassword(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  try {
+    startTimer({ req });
+
+    const { hash } = req.query as {
+      hash: string;
+    };
+
+    const {
+      password,
+    } = req.body as {
+      password: string;
+    };
+
+    const redisEmail = await getValue<{ recovery_email: IRedisEmail }>(hash);
+    if (!redisEmail) {
+      return next(new APIError(ErrorCode.FORBIDDEN));
+    }
+
+    await deleteValue(hash);
+
+    const { email } = redisEmail.recovery_email;
+    const rounds = configVars.env === 'test' ? 1 : 10;
+    const pass = bcrypt.hashSync(password, rounds);
+
+    const user = await User.findUserByEmail(email)
+
+    if (!user) {
+      return next(new APIError(ErrorCode.INCORRECT_EMAIL));
+    }
+
+    await User.updateProfile(user!.id, { password: pass });
 
     const update_user = await User.findUserByEmail(email)
 

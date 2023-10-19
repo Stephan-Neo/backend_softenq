@@ -30,8 +30,33 @@ export const sendConfirmEmailUrl = async (email: string, hash: string, name: str
   });
 };
 
+export const sendPasswordRecoverylUrl = async (email: string, hash: string, name: string): Promise<void> => {
+  const link = `${configVars.FRONTEND_URL}/update-password?hash=${hash}`;
+  const userName = name;
+
+  await transporter.sendMail({
+    from: `GTSK <${configVars.SMTP_USER}>`,
+    to: email,
+    subject: `Восстановление пароля на ${configVars.FRONTEND_URL}`,
+    text: '',
+    html: getEmailPasswordRecoveryHtml(link, userName),
+  });
+};
+
 const getEmailHtml = (link: string, userName: string) => {
   const source = fs.readFileSync('public/pages/registration.mail-template.html', 'utf-8').toString();
+  const template = handlebars.compile(source);
+  const replacements = {
+    main_page: configVars.FRONTEND_URL,
+    link,
+    userName,
+  };
+
+  return template(replacements);
+};
+
+const getEmailPasswordRecoveryHtml = (link: string, userName: string) => {
+  const source = fs.readFileSync('public/pages/password_recovery.mail-template.html', 'utf-8').toString();
   const template = handlebars.compile(source);
   const replacements = {
     main_page: configVars.FRONTEND_URL,

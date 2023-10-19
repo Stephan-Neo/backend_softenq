@@ -36,6 +36,33 @@ export default {
     },
   },
 
+  // POST /auth/password-recovery
+  passwordRecovery: {
+    request: {
+      body: Joi.object({
+        email: Joi.string().email().required().description('Email')
+      }),
+    },
+    response: {
+      ...generateResponseValidation(UserSchema.required()),
+    },
+  },
+
+  // POST /auth/password-recovery
+  updatePassword: {
+    request: {
+      body: Joi.object({
+        password: Joi.string().min(6).max(128).required().description('Password'),
+      }),
+      query: Joi.object({
+        hash: Joi.string().required().description('Hash'),
+      }),
+    },
+    response: {
+      ...generateResponseValidation(UserSchema.required()),
+    },
+  },
+
   // POST /auth/login
   login: {
     request: {
