@@ -10,7 +10,6 @@ export const UserSchema = Joi.object({
   email: Joi.string().email().required().description('Email'),
   name: Joi.string().required().description('User Name'),
   confirmEmail: Joi.boolean().description('Confirm Email'),
-  phone: Joi.string().min(6).max(11).description('Phone number'),
   role: Joi.string()
     .valid(...Object.values(UserRole))
     .required()
