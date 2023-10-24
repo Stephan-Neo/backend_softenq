@@ -69,14 +69,6 @@ export class User extends Model {
   @Column(DataType.STRING(48))
   name!: string;
 
-  @AllowNull(true)
-  @Length({
-    min: 6,
-    max: 11,
-  })
-  @Column
-  phone: string;
-
   @AllowNull(false)
   @Default(UserRole.USER)
   @Column(DataType.ENUM(...Object.values(UserRole)))
@@ -97,7 +89,6 @@ export class User extends Model {
       id: this.id,
       name: this.name,
       email: this.email,
-      phone: this.phone,
       role: this.role,
       confirmEmail: this.confirmEmail
     };
@@ -146,7 +137,6 @@ export interface IUser {
   createdAt?: string;
   updatedAt?: string;
   email?: string;
-  phone?: string;
   role?: UserRole;
   name: string;
   confirmEmail?: boolean

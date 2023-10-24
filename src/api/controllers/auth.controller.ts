@@ -62,12 +62,10 @@ export async function registration(req: Request, res: Response, next: NextFuncti
       email,
       password,
       name,
-      phone
     } = req.body as {
       email: string;
       password: string;
       name: string;
-      phone: string;
     };
 
     const user = await User.create({
@@ -75,7 +73,6 @@ export async function registration(req: Request, res: Response, next: NextFuncti
       name,
       password,
       role,
-      phone
     });
 
     const confirm_email: IRedisEmail = { email };

@@ -16,7 +16,6 @@ export default {
         email: Joi.string().email().required().description('Email'),
         password: Joi.string().min(6).max(128).required().description('Password'),
         name: Joi.string().min(3).max(128).required().description('Name'),
-        phone: Joi.string().max(128).required().description('Phone'),
       }),
     },
     response: {
