@@ -13,8 +13,10 @@ jobs:
       with:
         envkey_DEBUG: false
         envkey_SECRET_KEY: ${{ secrets.ENV_FILE }}
-        directory: home/actions-runner/_work/backend_softenq/backend_softenq
         file_name: .env
+
+    - name: Copy env
+      run: cp /github/workspace/.env .env
 
     - uses: actions/checkout@v3
     - name: Build the Docker image
