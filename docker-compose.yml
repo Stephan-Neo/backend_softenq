@@ -9,3 +9,31 @@ services:
     ports:
       - "3000:3000"
     command: yarn start
+    networks:
+      - mynetwork
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      mynetwork:
+        aliases:
+          - postgres.local
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      mynetwork:
+        aliases:
+          - redis.local
+
+networks:
+  mynetwork:
+    driver: bridge
