@@ -8,35 +8,6 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-    - name: executing remote ssh commands to set env
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script:
-          whoami |
-          echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
-          echo PORT=${{ secrets.PORT }} >> .env
-          echo LOG_LEVEL=${{ secrets.LOG_LEVEL }} >> .env
-          echo LOG_TRANSPORT=${{ secrets.LOG_TRANSPORT }} >> .env
-          echo SWAGGER_ENABLED=${{ secrets.SWAGGER_ENABLED }} >> .env
-          echo PG_HOST=${{ secrets.PG_HOST }} >> .env
-          echo PG_USER=${{ secrets.PG_USER }} >> .env
-          echo PG_PASS=${{ secrets.PG_PASS }} >> .env
-          echo PG_DB=${{ secrets.PG_DB }} >> .env
-          echo PG_PORT=${{ secrets.PG_PORT }} >> .env
-          echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-          echo JWT_EXPIRATION_MINUTES=${{ secrets.JWT_EXPIRATION_MINUTES }} >> .env
-          echo REFRESH_TOKEN_EXPIRATION_MINUTES=${{ secrets.REFRESH_TOKEN_EXPIRATION_MINUTES }} >> .env
-          echo SMTP_HOST=${{ secrets.SMTP_HOST }} >> .env
-          echo SMTP_PORT=${{ secrets.SMTP_PORT }} >> .env
-          echo SMTP_USER=${{ secrets.SMTP_USER }} >> .env
-          echo SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} >> .env
-          echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
-
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker-compose -f docker-compose.yml up -d --build
