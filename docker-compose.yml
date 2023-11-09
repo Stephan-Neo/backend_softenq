@@ -1,17 +1,6 @@
 version: '3.8'
 
 services:
-  api:
-    build: .
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - "3000:3000"
-    command: yarn start
-    networks:
-      - mynetwork
-
   postgres:
     image: postgres:latest
     environment:
@@ -33,6 +22,16 @@ services:
       mynetwork:
         aliases:
           - redis.local
+  api:
+    build: .
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    command: yarn start
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:
