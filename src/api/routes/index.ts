@@ -8,10 +8,13 @@ import configVars from 'config/vars';
 import { generateSpecification } from 'utils/Validation';
 
 import authRoutes from './auth.route';
+import walletRoute from './wallet.route';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
+
+router.use('/wallet', walletRoute)
 
 const swaggerSpecification = generateSpecification(router);
 

@@ -1,0 +1,1 @@
+INSERT INTO public."Users" (id, "createdAt", "updatedAt", "confirmEmail", email, password, name, role) VALUES ('3771a674-8a26-4477-9751-b932a0a96ce7', '2023-11-23 06:59:59.895000 +00:00', '2023-11-23 07:00:23.735000 +00:00', true, 'kazancevstepan0@gmail.com', '$2a$10$eJ.gWuewoTZhyD7Lck8.EuYfNWiyvXJoNn0XymiBusey1.AMh2pwS', 'Neo_GTSK', 'USER');
